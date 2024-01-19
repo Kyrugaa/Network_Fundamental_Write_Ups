@@ -1,0 +1,278 @@
+ Everything Routers do - Part 1 - Networking Fundamentals - Lesson 5 
+
+
+Routers:
+	Routers are connected to a network (just like hosts)
+	Just like hosts, routers have an IP and MAC address and all the rules of Layer 2 and Layer 3 on each interface
+	
+	Routers forward packets not destined to themselves (unlicke hosts)
+	
+RFC (Request for Comments) (Instructions for how the internet is build)
+	Internet Protocol, Version 6 (IPv6 = RFC 2460)
+	
+Terminology:
+	node	- a device that implements IPv6.
+	router	- a node that forwards IPv6 packets not explicitly addressed to itself.
+	host	- any node that is not a router.
+
+
+Routers maintain a map of all the Networks they know about.
+	Routing Table
+	
+
+Interface 1:	Network	= 	10.0.55.x /24
+		Host B = 	10.0.55.8 /b8b8
+		Router 1 = 	10.0.55.1 /eee3
+		
+Interface 2:	Network 	10.0.44.x /24
+		Host A = 	10.0.44.9 /a9a9
+		Host D = 	10.0.44.3 /d3d3
+		Router 1 = 	10.0.55.1 /eee1
+
+Router 1 - Routing Table
+	For destination 10.0.55.x ...
+		Send packet via Interface 1
+	
+	For destination 10.0.44.x ...
+		Send packet via Interface 2
+		
+Routing Table can be populated via three methods:
+
+
+	Method 1:
+	Directly Connected - Routes for the Networks which are attached:
+	
+	Router 1 is directly connected:
+	DC	10.0.55.x /24 = Interface 1
+	DC	10.0.44.x /24 = Interface 2
+	
+	
+Adding a new Router with a new Network
+
+Router 2:	Network =	10.0.66.x /24
+		Host C	=	10.0.66.7 /c7c7
+		Router 2 Interface 1 =	10.0.55.2 /eee2
+		Router 2 Interface 2 = 	10.0.66.2 /eee4
+		
+		
+	Router 2 is directly connected:
+	DC	10.0.55.x /24 = Interface 1 on Router 2
+	DC	10.0.66.x /24 = Interface 2 on Router 2
+	
+When Routers receive packets with an unknown Destination IP, packet is dropped
+
+	Method 2:
+	Static Routes - Routes manually provided by an Administrator:
+	
+	Router 2:
+	DC	10.0.55.x /24 = Interface 1 on Router 2
+	DC	10.0.66.x /24 = Interface 2 on Router 2
+	Static	10.0.44.x /24 = Router 1 IP 10.0.55.1
+	
+	Router 1:
+	DC	10.0.55.x /24 = Interface 1
+	DC	10.0.44.x /24 = Interface 2
+	Static	10.0.66.x /24 = Router 2 IP 10.0.55.2
+	
+	
+	
+	Method 3:
+	Routes learned automatically from other Routers
+	Routers talk to each other and if one Router doesent know the address it sends it to the other Router.
+	Basically the same as static. They just do it automatically by talking to each other.
+	
+	
+	
+Key Points of Part 1:
+	Routers have an IP & MAC for each Network they are connected to
+	Routing Table contains all the networks a Router knows
+		Populated via: Directly Connected, Static Routes, Dynamic Routes
+		
+_____________________
+
+ Everything Routers do - Part 2 - How Routers forward Packets - Networking Fundamentals - Lesson 5 
+ 
+ Routers also have ARP Tables - mapping of L3 to L2 address
+ 	Everything with an IP address has an ARP Table
+ 	Start Empty - populated as needed with network traffic
+ 	
+ Host A has data to send to Host C
+ Host A knows IP of Host C so Host A can construct the L3 header.
+ Host A knows packet must be sent to Default Gateway (Router 1) because Host C is on a foreign network
+ 
+ Host A ARP Request for 10.0.44.1 (Router 1 or Default Gateway)
+ Host A ARP Table:
+ 10.0.44.1 --> ???
+	
+Router 1 populates its ARP Table with entry for 10.0.44.9 (Host A)
+
+Router 1 sends ARP Response
+
+Host A populates its ARP Table with entry for 10.0.44.1:
+	Host A ARP Table:
+	10.0.44.1 --> eee1
+
+Host A constructs L2 header
+	Host A sends packet to Router 1:
+	L3 = SRC 10.0.44.9 / DST 10.0.66.7
+	L2 = SRC a9a9 / DST eee1
+
+Router 1 receives packet
+
+Router 1 discards L2 header
+
+Router 1 looks up Destination IP in Routing Table
+	Packets next hop is to 10.0.55.2
+	
+Router 1 sends ARP Request for 10.0.55.2 because Router 1 ARP Table:
+10.0.44.9 --> a9a9
+10.0.55.2 --> ???
+
+Router 2 populates its ARP Table with entry for 10.0.55.1(Router 1)
+Router 2 ARP Table now:
+10.0.55.1 --> eee3
+
+Router 2 sends ARP Response
+Router 1 ARP Table now:
+10.0.44.9 --> a9a9
+10.0.55.2 --> eee2
+
+Now Router 1 constructs L2 header:
+L2 = SRC eee3 / DST eee2, L3 = SRC 10.0.44.9 / DST 10.0.66.7
+
+Router 1 now sends packet to Router 2
+
+Router 2 receives packet
+
+Router 2 discards L2 header
+
+Route 2 looks up Destination IP in Routing Table
+	Packets final hop is to 10.0.66.7(DST)
+	
+Router 2 sends ARP Request for 10.0.66.7
+
+Host C populates its ARP Table with entry for 10.0.66.2(Router 2)
+
+Host C ARP Table:
+10.0.66.2 --> eee4
+
+Host C sends ARP Response
+
+Router 2 populates its ARP Table with entry for 10.0.66.7
+
+Router 2 ARP Table now:
+10.0.55.1 --> eee3
+10.0.66.7 --> c7c7
+
+Router 2 constructs L2 header
+
+Router 2 sends packet to Host C
+
+Host C reveives packet
+
+Host C discards L2 header
+
+Host c discards L3 header
+
+Host C processes data
+________
+NOW THE RESPONSE
+
+Host C has data for Host A
+
+Host C constructs L3 header: SRC 10.0.66.7 / DST 10.0.44.9
+
+Host C knows packet must be sent to Deault Gateway (Router 2)
+	Host C knows Router 2's MAC from previous communication
+
+Host C constructs L2 header: SRC c7c7 / DST eee4
+
+Host C sends packet to Router 2
+
+Router 2 receives packet
+
+Router 2 discards L2 header
+
+Router 2 looks up Destination IP in Routing Table
+	Packets next hop is to 10.0.55.1
+	Router 2 knows Router 1's MAC from previous communication
+
+Router 2 constructs new L2 header: SRC eee2 / DST eee3
+
+Router 2 sends packets to Router 1
+
+Router 1 receives packet
+
+Router 1 discards L2 header
+
+Router 1 looks up Destination IP in Routing Table
+	Packet's final hop is to 10.0.44.9
+	Router 1 knows Host A's MAC from previous communication
+
+Router 1 constructs new L2 header
+
+Router 1 sends packet's to Host A
+
+Host A receives packet
+
+Host A discards L2 header
+
+Host A discards L3 header
+
+Host A processes data
+______
+
+Events between Router 2 and Router 1 would repeat for any amount of Routers in the Path
+
+Each Router:
+	Looks up Destination IP in Routing Table to determine Next-Hop IP
+	Adds a L2 header with Destination MAC next Router's MAC
+		Performs ARP as necessary
+
+__________________
+
+ Router Hierarchies and Route Summarization - Networking Fundamentals - Lesson 5 - Part 3 
+ 
+ ACME inc.
+ 
+ Routers typically connected in a hierarchy
+ 	Easier to scale - more consistent connectivity
+ 	Every Office Router is connected to the main Router which connects to the internet
+ 	Hierarchy allows for Route Summarization
+ 		Reduce number of Routes in Routing Table
+ 		Default Route - ultimate route summary
+ 			0.0.0.0 /0 - every IPv4 address
+ 			"For everything else, go here"
+ 			
+ 
+ Subneting Tipp
+ 	/24 Match first Three Octets  	##.##.##.xx
+ 	/16 Match first Two Octets	##.##.xx.xx
+ 	/8  Match only first Octet	##.xx.xx.xx
+ 	/0  Match only first Octet	xx.xx.xx.xx --> 0.0.0.0
+
+
+Key Points:
+Routers typically connected in a hierarchy
+	Easier to scale
+	More consistent connectivity
+
+Hierarchy allows for Route Summarization
+	Reduce number of Routes in Routing Table
+	Default Route - ultimate route summary
+		0.0.0.0 /0 - every IPv4 address
+
+		"for everything else, go here"
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+

@@ -1,0 +1,24 @@
+HTTP vs HTML: Unveiling Network Protocols using Telnet
+
+┌──(kali㉿kali)-[~]
+└─$ telnet pracnet.net 80       
+Trying 104.225.208.27...
+Connected to pracnet.net.
+
+
+This is the HTTP-Request
+GET /simple.html HTTP/1.1
+Host: pracnet.net
+
+
+HTTP Response sent by the Webserver:
+HTTP/1.1 200 OK
+Connection: Keep alive
+Keep-Alive: timeout=5, max=100
+...
+
+<HTML>
+	HTML code from the Webserver
+</HTML>
+
+HTTP Request get sent by webbrowser

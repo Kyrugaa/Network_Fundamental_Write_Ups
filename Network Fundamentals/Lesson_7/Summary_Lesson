@@ -1,0 +1,237 @@
+ How Data moves through the Internet - Networking Fundamentals Summary lesson
+ 
+Packet Traveling
+ 	Summary lesson to Network Fundamentals series 
+
+Data moves through networks based upon three Tables:
+	MAC Address Table	- Mapping of Switchport to MAC address
+	ARP Table/Cache		- Mapping of IP Address to MAC address
+	Routing Table		- Mapping of IP Network to Interface or Next Router (next hop)
+Everyone of them is a mapping from something to something else
+
+Example:
+
+	Network 1	=	11.8.8.0	/24
+	Host A		=	11.8.8.11	MAC: a1a1
+	Router 1	=	11.8.8.1	MAC: eee1
+	Switch
+	
+	Network 2	=	22.7.7.0	/24
+	Host B		=	22.7.7.22	MAC: b2b2
+	Router 2	=	22.7.7.1	MAC: eee2
+	
+	Network 3	=	33.6.6.0	/24
+	Host C		=	33.6.6.33	MAC: c3c3
+	Router 3	=	33.6.6.1	MAC: eee3
+	
+	
+Switch:		MAC Address Table
+
+Host A:		ARP Table
+		Routing Table
+		
+Host B:		ARP Table
+		Routing Table
+		
+Host C:		ARP Table
+		Routing Table
+
+Router 1:	ARP Table
+		Routing Table
+		
+Router 2:	ARP Table
+		Routing Table
+		
+Router 3:	ARP Table
+		Routing Table
+		
+Routing Table must be populated ahead of time. When Routers receive packets with an unknown Destination,packet is dropped.
+So the Routing Table cannot be empty.
+
+Host A Routing Table:
+0.0.0.0 /0 (IPv4)	11.8.8.1 (Default Gateway)
+	
+Host B Routing Table:
+0.0.0.0 /0		22.7.7.1
+
+Host C Routing Table:
+0.0.0.0 /0		33.6.6.1
+
+
+Router 1 Routing Table:
+11.8.8.0 /24		Direct connect
+0.0.0.0 /0		Internet
+
+Router 2 Routing Table:
+22.7.7.0 /24		Direct connect
+0.0.0.0 /0		Internet
+
+Router 3 Routing Table:
+33.6.6.0 /24		Direct connect
+0.0.0.0 /0		Internet
+
+
+Host A has data in payload (1's and 0's)
+
+Host A creates a L3 header to get to Host B:
+SRC = 11.8.8.11		DST = 22.7.7.22
+	
+First of all Host A checks via IP address and Subnet Mask if the DST is on the same Network.
+
+Because they are not in the same Network, Host A automaticlly sends package to Default Gateway (Router 1)
+
+But Host A's ARP Table doesnt know Router 1's MAC address for a L2 header
+
+So Host A has to do the ARP Process:
+ARP Request with a L2 header:
+SRC = a1a1		DST = ffff (Broadcast MAC Address)	sends it to everybody in the Network
+
+ARP Request reaches the Switch on Port 4
+Switch now knows that MAC address of a1a1 is on Port 4
+Switch would send Request out of all ports (ffff)
+
+Router 1 receives ARP Request and now updates its ARP Table:
+IP: 11.8.8.11	MAC: a1a1
+Now Router 1 sends an ARP Response with the L2 header:
+SRC = eee1		DST = a1a1
+
+It goes to the Switch which updates its MAC Table:
+Port 4 = a1a1
+Port 5 = eee1
+
+Because Switch already know the DST of the package, it sends it out at Port 4
+
+Now Host A receives it and can update its ARP Table:
+11.8.8.1 = eee1
+
+Now Host A has everything to send the data package to the Router:
+L3 header:
+SRC = 11.8.8.11		DST = 22.7.7.22
+L2 header:
+SRC =a1a1		DST = eee1
+
+Package gets on the wire and arrives at the Switch at Port 4. Because Switch has the L2 DST in its MAC Table, it knows it has to send it out on Port 5 (Router 1)
+
+Once the Router 1 receives the package, it removes the L2 header because the purpose of this L2 header was to hop from Host A to Router 1.
+
+Now the Router 1 looks at its Routing Table to determen where to send the packed next.
+Because the DST IP Address is 22.7.7.22 matches with the 0.0.0.0 /0, it sends it out in the internet (Basiclly Internet is just a bunch of Routers)
+
+Once it get to Router 2, Router 2 looks at its Routing Table which is:
+22.7.7.0 /24		Direct Connect
+0.0.0.0 /0		Internet
+
+Because the Router 2 is directelly connected to the Network 22.7.7.0 /24, it knows the destination is somewhere in its own Network.
+But Router 2's ARP Table is empty so he cant put a L2 header on the package.
+Router 2 now has to do the ARP process and add an L2 header with the broadcast:
+SRC = eee2		DST = ffff
+
+Host B will receive a copy and response with its MAC address while updating Host B's ARP Table:
+22.7.7.1 = eee2 
+
+Host B creates a ARP Response L2 header:
+SRC = b2b2		DST = eee2
+
+Router 2 receives the response and can update its ARP Table:
+22.7.7.22 = b2b2
+
+Now Router 2 can create a L2 header to send it to Host B:
+L3 header:
+SRC = 11.8.8.11		DST = 22.7.7.22	
+L2 header:
+SRC = eee2		DST = b2b2
+
+Router 2 puts the package on the wire and it will arive at Host B
+
+Host B can now remove the L3 and L2 header and process the data and create a response
+
+________
+
+Updated Tables:
+
+Host A Routing Table:
+0.0.0.0 /0 (IPv4)	11.8.8.1 (Default Gateway)
+Host A ARP Table:
+11.8.8.1 = eee1 (Router 1)
+	
+Host B Routing Table:
+0.0.0.0 /0		22.7.7.1
+Host B ARP Table:
+22.7.7.1 = eee2 (Router 2)
+
+Host C Routing Table:
+0.0.0.0 /0		33.6.6.1
+
+
+Router 1 Routing Table:
+11.8.8.0 /24		Direct connect
+0.0.0.0 /0		Internet
+Router 1 ARP Table:
+11.8.8.11 = a1a1 (Host A)
+
+Router 2 Routing Table:
+22.7.7.0 /24		Direct connect
+0.0.0.0 /0		Internet
+Router 2 ARP Table:
+22.7.7.22 = b2b2 (Host B)
+
+Router 3 Routing Table:
+33.6.6.0 /24		Direct connect
+0.0.0.0 /0		Internet
+
+Switch MAC Table:
+Port 4 = a1a1
+Port 5 = eee1
+
+________
+	
+	
+Host B now has the response in the payload
+
+Host B can create a L3 header and because Host B already has Router 2 in its ARP Table Host B can also hang on a L2 header:
+L3 header:
+SRC = 22.7.7.22		DST = 11.8.8.11
+L2 header:
+SRC = b2b2		DST = eee2 (Router 2)
+
+Upon arriving Router 2, Router 2 strips of L2 and take a look at its Routing Table
+In this case the DST only matches with the Default Route 0.0.0.0 /0 so Router 2 knows to send it out in the Internet
+
+The package travels trough the internet until finally arrive on Router 1
+Upon arriving on Router 1, Router 1 will look at its Routing Table and determine that the Destination address matches the Directly connected Route.
+And Router 1 already knows the MAC address which matches the L3 DST IP address in the ARP Table.
+So Router 1 has all the necerssary information to create a L2 header to Host A
+
+L3 header:
+SRC = 22.7.7.22		DST = 11.8.8.11
+L2 header:
+SRC = eee1		DST = a1a1 (Host A)
+
+The package will arrive at the Switch at Port 5.
+The Switch tries to update its MAC Table and sends it out on Port 4 since the Switch knows Host A's MAC address
+
+Since the Switch know that the DST a1a1 is on Port 4, it puts the package out Port 4.
+
+Last but not least now Host one removes L2 and L3 and can process the data.
+___________________
+
+Everything that happens when you type www.google.com into a web browser:
+
+
+if we change the data to an DNS Request, its the same process but to an DNS Server which changes the domain into an IP address.
+Once receiving the DNS Response, we can take the IP which gave us the DNS Server and create a L3 header with
+SRC = 11.8.8.11
+DST = 33.3.3.33 (Converted IP we got from DNS Server)
+
+This time its a http request with that L3 sent by the Webbrowser
+
+
+
+
+	
+	
+	
+	
+	
+Layer 2 is hop to hop (MAC Address)
+	

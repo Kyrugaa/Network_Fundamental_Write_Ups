@@ -1,0 +1,178 @@
+Networking Fundamentals:
+
+Protocols -> Set of rules and messages that form an Internet standard
+	-ARP - Adress Resolution Protocol
+		Resolves IP to MAC mappings
+This allows two hosts discover each others MAC adress if all they know is their IP by sending out the ARP
+___
+
+	-FTP - File Transfer Protocol
+allows a client and a server to send and recieve files from each other.
+Client sends a RETR(retrive for a particular file) request command and prompt the server to send the file.
+___
+
+	SMTP -Simple Mail Transfer Protocol
+Protocols, that Email servers use to change Emails. Client sends HELO command request to the SMTP server. Server will response with responsecode 250. Now, Client and Server can exchange Mail
+___
+
+	-HTTP - Hyper Text Transfer Protocol	-SSL - Secure Sockets Layer	-TLS - Transport Layer Security
+Builds a secure tunel between client and Webserver. Through that tunel, the Client does a GET request and the Webserver will response with a 200 OK code (HTTP secured with SSl and TLS)
+___
+
+	Hosts
+Servers are basiclly Clients with FTP, SMTP, HTTP or HTTPS software on them. Like the client they only send or recive traffic
+___
+
+	DNS - Domain Name System
+Translate Domain names into an IP Address. Exmpl. (site.com -> 160.8.23.154)
+Client to DNS Server. Server respond with site.com. 160.8.23.154
+And with that the client can GET-request something over the IP address to the Webserver.
+---
+
+Every Host needs four items for Internet Connectivity:
+-IP Address		-Host's Identity on the Internet
+-Subnet mask		-Size of Host's network (checks if the Hosts talkes to the intern or extern network)
+-Default Gateway	-Router's IP Address
+-DNS Server IP(s)	-Translate domain names to IP's
+___
+	DHCP - Dynamic Host Configuration Protocol
+Server provides IP/SM/DG/DNS for Clients. Host sends discover message to DHCP Server to discover the DHCP server and then the DHCP Server provides information about IP Address, Subnet mask, Default Gateway, DNS Server IP's. Then the client has everything to speak to the internet.
+___
+
+LESSON 1A:
+How data flows through the Internet
+
+
+1. Hosts:
+Hosts are any device which sends or receive traffic. (Computer, Laptop, Phones, Printers, Servers, Cloud Server)
+Also any Internet of Things (IoT) devices (TV, Speakers, Smart Watches, Thermometers, Lights, Refrigerator)
+
+Splited in Clients and Servers
+-Client initiate requests, Servers respond
+--Relative to specific communication
+___
+
+
+2. IP Address:
+An IP Address is the identity of each host
+Source and Destination address will be sent for each request and response
+--IP Addresses are 32 bits
+--Represented as four Octets (1000 1000 . 0001 0110 . 0001 0001 . 0110 0010)
+--Convert eacht Octet to Decimal (136.22.17.98)
+--Each Octet can be 0-255
+
+--Hirarchically assigned -> ACME, inc. - 10.x.x.x
+ACME offices in New York				(10.20.x.x)
+ACME offices in London					(10.30.x.x)
+ACME offices in Tokyo					(10.40.x.x)
+
+ACME office Team in new York -> Sales Office 		(10.20.55.x)
+ACME office Team in New York -> Engineering Office 	(10.20.66.x)
+ACME office Team in New York -> Marketing Office 	(10.20.77.x)
+
+ACME office Team in London -> Sales Office 		(10.30.55.x)
+ACME office Team in London -> Engineering Office 	(10.30.66.x)
+ACME office Team in London -> Marketing Office 		(10.30.77.x)
+
+ACME office Team in Tokyo -> Sales Office 		(10.40.55.x)
+ACME office Team in Tokyo -> Engineering Office 	(10.40.66.x)
+ACME office Team in Tokyo -> Marketing Office 		(10.40.77.x)
+
+3. Network:
+A Network is what transports traffic between Hosts
+-Logical grouping of hosts which require similar connectivity
+-Networks can contain other networks
+--Sometimes called Sub-Networks or Subnets
+-Networks connect to other networks -> Internet (Interconnectet Networks)
+
+________
+
+LESSON 1A:
+How data flows through the Internet
+
+
+1. Repeaters:
+-Data crossing a wire decays as it travels
+-Repeater regenerates signals before it decays
+--Allows communications across greater distances
+Connecting hosts directly to each other doesnt scale
+
+
+2. Hub
+Hubs are simply multi-port Repeaters
+-Facilitates scaling communication between additional hosts
+-Everyone receives everyone else's data
+
+
+3. Bridge
+Bridges sit between Hub-connected hosts
+-Bridges only have two ports
+-Bridges learn which hosts are on each side
+
+
+4. Switch
+Switches Facilitate communication within a network
+-Switches are a combination of Hubs and Bridges
+--Multiple Ports
+--Learns which hosts are on each port
+
+5. Router
+Routers facilitate communication between networks
+-Provides a traffic control point (security, filtering, redirecting) (traditionally, switches couldnt perform filtering)
+-Routers learn which networks they are attached to
+--Known as Routes - Stored in a Routing Table
+-Routing Table: all networks a Router knows about
+
+-Routers have IP addresses in the Networks they are attached to
+-Gateway: each host's way out of their local Network
+-Routers Create the Hierarchy in Networks and the entire Internet
+_____
+Routing is the process of moving data between networks
+A Router is a device whose primary purpose is Routing
+
+Switching is the process of moving data within networks
+A Switch is a device whos primary purpose is Switching
+
+There are many other Network Devices:
+Access Points		Layer3 Switches
+Firewalls		IDS/IPS
+Load Balancers		Proxies
+Virtual Switches	Virtual Routers
+
+All of them perform Routing and/or Switching
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

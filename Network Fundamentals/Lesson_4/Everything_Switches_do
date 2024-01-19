@@ -1,0 +1,153 @@
+Everything Switches do - Part 1 - Networking Fundamentals - Lesson 4
+
+Switches:
+Switching is the process of moving data within networks
+	Switches are devices whose primary purpose is Switching
+	Devices communicating through a switch belong to the same IP network
+
+Host A:		MAC:	a1a1
+		IP:	10.1.1.11
+
+Switch:		MAC:	e9e9		
+		IP:	10.1.1.x
+		Subnet:	/24
+	
+Host D:		MAC:	e4e4
+		IP:	10.1.1.44
+
+Switches are L2 devices - they only use L2 header to make decisions (SRC/DST)
+
+In this example Host A knows Host D's MAC and IP address. (So I skip the ARP process)
+
+Switches use and maintain MAC Address Table
+	Mapping of Switch Ports to MAC addresses
+
+MAC Address Table: (Which MAC is on which Port on the Switch)
+Port 5 --> a1a1
+Port 6 --> c3c3
+Port 7 --> b2b2
+Port 8 --> d4d4
+
+Switches perform three actions:
+	Learn 	(MAC Address Table are empty in the beginning)
+	Flood 	(Duplicate and send frame out all switch ports. except receiving port)
+	Forward	(Use MAC Address Table to deliver Frame to appropriate switch port)
+	
+Host A sends data on a wire to Port 5 on the Switch
+Switch update MAC Address Table with mapping of Switch Port to Source MAC
+MAC Address Table at this point:
+Port 5 --> a1a1
+
+Now Switch knows that Port 5 is the port of MAC a1a1
+Swtch doesn't know on which port the wished DST of Host A is. So the switch Floods.
+MAC Address Table at this point:
+Port 5 --> a1a1
+Port 8 --> d4d4
+
+Process would be identical if Host D was a Router connected to the Internet
+
+Traffic going THROUGH the Switch
+	So the Switch has a MAC address but its not involved for communication through the Switch
+
+Traffic going TO the Switch
+	Switch has a MAC address and is configured with an IP address
+	Switch essentially act as a host in the network
+	Follows all the host communication rules
+	Example: Trying to log into the Switch with SSH or Telnet
+	
+____________________
+
+ Everything Switches do - Part 2 - Networking Fundamentals - Lesson 4 
+ 
+ Switches:
+ Switches use and maintain		MAC Address Table
+ Switches perform three actions:	Learn, Flood, Forward
+ 	Unicast Frame	- destination MAC is another host (one to one communication)
+ 		Switch will flood only if MAC address is not in MAC address table
+ 	Broadcast Frame	- destination MAC address of ffff.ffff.ffff (all hosts in network)
+ 		Broadcast frames are always Flooded
+ 
+ Broadcast	=	Type of Frame
+ Flood		=	Switch Action
+ 
+ Switches will only send Broadcasts if traffic is going TO or FROM the Switch
+ 
+ VLANs	-	Virtual Local Area Networks
+ 	Divides Switch Port into isolated groups
+ 	Divides Switches into multiple "mini-switches"
+ 	Switches do all three action within each VLAN
+ 	
+ 
+ Multiple Switches:
+ 	Switches maintain independent MAC address Tables
+ 	They dont share information (seperate MAC Address Tables)
+ 	Switches perform switch actions independently
+ 	
+ 
+ Declaration Example:
+ 
+ Host A:	On Switch 1
+ 		aaaa.aaaa.aaaa
+ 		Port 1
+ 
+ Host C:	On Switch 1
+ 		cccc.cccc.cccc
+ 
+ Host B:	On Switch 2
+ 		bbbb.bbbb.bbbb
+ 		Port 6
+ 
+ Host D:	On Switch 2
+ 		dddd.dddd.dddd
+ 
+ Switch 1 is on Port 4 of Switch 2
+ Switch 2 is on Port 3 of Switch 1
+ 		
+ Host A knows the MAC address of the Host hes trying to speak to.
+ 
+ Host A sends data to Switch 1:
+ 	Switch 1: "I just received a frame on port 1 with a source MAC of aaaa.aaaa.aaaa, i will learn this mapping in my MAC Table"
+ 	Switch 1: "I dont know where bbbb.bbbb.bbbb is. I'll have to flood this frame out all ports"
+ 	
+ 	Switch 2: "I just received a frame on port 4 with a source MAC of aaaa.aaaa.aaaa, i will learn this mapping in my MAC Table."
+ 	
+ Current MAC Tables:
+ Switch 1:
+ 	Port 1	=	aaaa.aaaa.aaaa
+ Switch 2:
+ 	Port 4	=	aaaa.aaaa.aaaa
+ 	
+ 	Switch 2: "I dont know where bbbb.bbbb.bbbb is. I'll have to flood this frame out all ports."
+ 	Host B get copy of file
+ 
+ Host D get a copy of this frame and dumbs it silently.
+ Host B get a copy of this frame for processing and theoreticly creates a response.
+ Response is sent from Host B to Host A.
+ 
+ 	Switch 2: "I just reveived a frame on port 6 with a source MAC of bbbb.bbbb.bbbb, i will learn this mapping in my MAC Table."
+ 	
+ 	Switch 2: "I know where aaaa.aaaa.aaaa is. I will forward this frame out port 4"
+ 	
+ 	
+ 	Switch 1: "I just received a frame on port 3 with a source MAC of bbbb.bbbb.bbbb, i will learn this mapping in my MAC Table."
+ 	
+ Current MAC Tables:
+ Switch 1:
+ 	Port 1	=	aaaa.aaaa.aaaa
+ 	Port 3	=	bbbb.bbbb.bbbb
+ 	
+ Switch 2:
+ 	Port 4	=	aaaa.aaaa.aaaa
+ 	Port 6	=	bbbb.bbbb.bbbb
+ 	
+ 	Switch 1: "I know where aaaa.aaaa.aaaa is. I will forward this frame out port 1."
+ 
+ 
+ 
+ 
+ 
+ 
+	
+	
+	
+	

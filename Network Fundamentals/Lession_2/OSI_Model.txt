@@ -1,0 +1,74 @@
+Lession 2: Part 1
+
+OSI Model, A Practical Perspective
+
+
+Purpose of Networking:
+	Allow two hosts to share data with one another
+	
+Hosts must follow a set of rules
+
+The rules for Networking are divided into seven layers:
+-OSI Model
+
+Human Body is made up various systems:
+-Skeletal, Respiratory, Nervous, Cardiovascular, Muscular etc.
+-if all these systems are functioning, the Human lives
+
+OSI model divides rules of networking into 7 layers
+-Each layer serves a specific function
+-if all layers are functioning, hosts can share data(human lives)
+__
+
+LAYER 1 - Physical layer
+	Computer data exists in the form of Bits(1 and 0)
+	Something has to transport those bits between hosts (the physical layer)
+	Goal of Physical layer is transporting bits
+	L1 Technologies: Cables, Wifi, Repeaters, Hubs
+	
+	
+LAYER 2 - Data Link - Hop to Hop
+	Handels everything that allows hosts to hop to the wished target
+	Interacts with the Wire(i.e., Physical layer)
+	Puts Bits on the Wire and Takes Bits from the Wire
+	L2 Technologies: NIC - Network Interface Cards, Wifi Access Cards, Switches
+	Addressing Scheme - MAC Addresses
+		48 bits, represented as 12 hex digits
+		94-65-9C-3B-8A-E5 (Windows) / 94:65:9C:3B:8A:E5 (Linux) / 9465.9C3B.8AE5 (Cisco Routers and Switches)
+		Every NIC has a unique MAC Address
+	Often communication betwen hosts require multiple hops
+	
+
+LAYER 3 - Network - End to End
+	Addressing Scheme - IP addresses
+		32 bits, representing as 4 octets, each 0-255
+	L3 Technologies: Routers, Hosts, (anything with an IP)
+			
+ARP - Address Resolution Protocol
+	Links a L3 address to a L2 address
+		
+		
+_______
+Lession 2: Part 2
+
+
+LAYER 4 - Transport - Service to Service
+	Distinguish data streams
+	Addressing Scheme - Ports
+		0-65535 - TCP - favors reliability
+		0-65535 - UDP - favors efficiency
+	Server listen for requests to pre-defined Ports
+	Clients select random Port for each connection (different applications, z.b. Discord, onlinegame, youtube)
+
+
+LAYER 5, 6, 7 - Session, Presentation, Application
+	Distinction between these layers is somewhat vague
+	Other Networking Models combine these into one layer
+	L1-L4 are most important to understand how data flows
+	OSI Model - 	1 Physical, 2 Data Link, 3 Network, 4 Transport, 5 Session, 6 Presentation, 7 Application
+	TCP/IP Model -	1 Network Access, 2 Internet, 3 Host to Host, 4 Application
+	
+	
+	
+	
+		

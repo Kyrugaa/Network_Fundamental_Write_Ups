@@ -1,0 +1,131 @@
+LESSON 3 - EVERYTHING HOSTS DO TO SPEAK ON THE INTERNET: PART 1
+
+
+First example: Hosts communicating to another host in the same network
+
+Host A: 	MAC: 	a2a2
+		IP:	10.1.1.22
+		Subnet:	255.255.255.0
+
+Host B:		MAC:	b3b3
+		IP:	10.1.1.33
+		Subnet:	255.255.255.0
+		
+
+Host A and B are directly connected
+	Both hosts have a NIC(Network Interface Card), and therefore a MAC address
+	Both hosts are configured with an IP address and a Subnet Mask
+		Subnet Mask identifies the size of the IP Network
+
+Host A has some Data to send to Host B
+	Networking doesn't care what this data is - its just 1 and 0
+Host A knows the IP address of Host B
+	Maybe user typed: ping 10.1.1.33
+	Maybe IP address was aquired from DNS (converts Domain Name into a IP address)
+Host A knows 10.1.1.33 is in its own IP Network
+Host A can create the L3 header to attach to the Data
+	Layer 3 - End to End
+	SRC: 10.1.1.22
+	DST: 10.1.1.33
+Host A does not know Host B's MAC address
+	Host A must use Address Resolution Protocol (ARP) to get Host B's MAC address
+Host A uses ARP to resolve target's MAC address
+	ARP Request asks for the MAC address associated with target IP
+		ARP Request includes sender's MAC address
+		ARP Request is a Broadcast - sent to everyone on the Network
+			Destination MAC address: ffff.ffff.ffff
+			Reserved MAC address to send a packet to everyone on the local network
+	He asks: If anyone out there has the IP 10.1.1.33, send me your MAC. My IP/MAC is 10.1.1.22 / a2a2
+	ARP request contains L2 header(take ARP payload and deliver it to Host B)
+	
+Host A uses ARP to resolve target's MAC address
+	ARP Request asks for the MAC address associated with known IP
+	ARP Mappings are stored in an ARP Cache
+	
+	ARP Cache of Host A: 10.1.1.22 --> ??
+	ARP Cache of Host B after recieving request: 10.1.1.33 --> a2a2 (L2 ARP response)
+Host B response: "I am 10.1.1.33, my MAC is b3b3
+	Response is sent Unicast (directly to Host A)
+
+Host A creates L2 header
+	Layer 2 - Hop to Hop
+	
+Data is sent to Host B
+	L2 header is discarded
+	L3 header is Discarded
+	Data is processed by Application
+	
+	
+Host B has necessary information to respond
+	ARP cache is already populated
+
+Further data exchange between hosts is simple
+	Both hosts have what they need to create L3 and L2 headers
+
+______________________________
+
+LESSON 3 - EVERYTHING HOSTS DO TO SPEAK ON THE INTERNET: PART 2
+
+Host communicating to another host in a foreign network:
+
+
+Host A:		MAC:	a2a2
+		IP:	10.1.1.22
+		Subnet:	/24 (other way to represent 255.255.255.0
+
+Router:		MAC:	e5e5
+		IP:	10.1.1.1
+		Subnet	/24
+		
+Host C:		MAC:	c4c4
+		IP:	10.9.9.44
+		Subnet:	/24
+		
+Anything with an IP-Address has a ARP Cache
+
+Host A has some data to send to Host C
+	Host A knows Host C's IP address
+		Provided by the User or the Application
+	Host A knows Host C's IP address is on a foreign network by looking at the both IP addresses
+
+Because Host A knows Host C's IP address he can create a L3 header.
+	Layer 3 - End to End:
+	SRC:	10.1.1.22
+	DST:	10.9.9.44
+Host A needs to create a L2 header
+	Layer 2 - Hop to Hop
+	Next Hop is the Router
+	
+Host A uses ARP to resolve the MAC address of the Router's IP
+	Router IP address is configured as the Default Gateway
+ARP Request:
+	Host A:
+	"If anyone out there has the IP 10.1.1.1, send me your MAC. My IP / MAC is 10.1.1.22 / a2a2
+	Router:
+	"I am 10.1.1.1, my MAC is e5e5
+
+Host A populates ARP Cache with Router's mapping
+Host A now has the Routers IP and MAC address in his ARP Cache
+
+Host A creates L2 header
+	Layer 2 - Hop to Hop
+Data is sent to the Router
+	L2 header is discarded
+	Router takes over from this point
+	Host A's job is done
+	
+ARP mapping can be used for ANY host in foreign networks
+Host A's first step when sending data is always the same:
+	Determine if target IP is on local or foreign network
+		Foreign	--> ARP for Default Gateway IP
+		Local	--> ARP for Target IP
+
+
+
+	
+	
+	
+	
+	
+	
+	
